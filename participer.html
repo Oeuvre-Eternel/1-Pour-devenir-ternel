@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Participer - 1 € pour rentrer dans l'histoire</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>💶 Participer</h1>
+  <p class="subtitle">Choisis ton message : texte, emoji ou image (max 2 Mo)</p>
+</header>
+
+<main>
+  <div class="panel form">
+    <label for="type">Type de contribution</label>
+    <select id="type">
+      <option value="text">Texte</option>
+      <option value="emoji">Emoji</option>
+      <option value="image">Image (fichier)</option>
+    </select>
+
+    <div id="textArea">
+      <label for="textInput">Ton texte (max 200 caractères)</label>
+      <textarea id="textInput" maxlength="200" placeholder="Écris ici... (200 caractères max)"></textarea>
+    </div>
+
+    <div id="imageArea" style="display:none;">
+      <label for="imageUpload">Importer une image (JPG / PNG / GIF) — max 2 Mo</label>
+      <input type="file" id="imageUpload" accept="image/jpeg,image/png,image/gif">
+      <div id="preview"></div>
+    </div>
+
+    <div class="form-actions">
+      <button id="payBtn" class="primary">Payer 1 € et envoyer</button>
+      <a href="index.html" class="link">Retour</a>
+    </div>
+
+    <div id="msg" class="msg"></div>
+  </div>
+</main>
+
+<footer>
+  <small>© 2025 [Ton Nom ou Pseudo] – Tous droits réservés.</small>
+</footer>
+
+<script src="script.js"></script>
+<script>
+// UI switching
+const typeSelect = document.getElementById('type');
+const textArea = document.getElementById('textArea');
+const imageArea = document.getElementById('imageArea');
+const imageInput = document.getElementById('imageUpload');
+const preview = document.getElementById('preview');
+
+typeSelect.addEventListener('change', () => {
+  if (typeSelect.value === 'image') {
+    textArea.style.display = 'none';
+    imageArea.style.display = 'block';
+  } else {
+    textArea.style.display = 'block';
+    imageArea.style.display = 'none';
+  }
+});
+
+// Validate image size and type
+imageInput.addEventListener('change', function(){
+  preview.innerHTML = '';
+  const file = this.files[0];
+  if (!file) return;
+  const maxSize = 2 * 1024 * 1024; // 2 Mo
+  const validTypes = ['image/jpeg','image/png','image/gif'];
+  if (!validTypes.includes(file.type)) {
+    alert('Format non supporté. Utilisez JPG, PNG ou GIF.');
+    this.value = '';
+    return;
+  }
+  if (file.size > maxSize) {
+    alert('Image trop lourde. Max 2 Mo.');
+    this.value = '';
+    return;
+  }
+  // preview
+  const img = document.createElement('img');
+  img.src = URL.createObjectURL(file);
+  img.style.maxWidth = '250px';
+  preview.appendChild(img);
+});
+
+// Handle "payment" and submission (demo)
+document.getElementById('payBtn').addEventListener('click', async () => {
+  const type = typeSelect.value;
+  if (type === 'text' || type === 'emoji') {
+    const text = document.getElementById('textInput').value.trim();
+    if (!text) { alert('Veuillez entrer quelque chose.'); return; }
+    submitContribution({type:'text', content:text});
+  } else {
+    const file = imageInput.files[0];
+    if (!file) { alert('Veuillez choisir une image.'); return; }
+    // read as base64 (demo only)
+    const reader = new FileReader();
+    reader.onload = function(e){
+      submitContribution({type:'image', content:e.target.result, name:file.name});
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+function submitContribution(payload) {
+  // Simuler paiement
+  if (localStorage.getItem('hasParticipated')) {
+    alert('Vous avez déjà participé !');
+    return;
+  }
+
+  // Dans une vraie version, ici on appellerait l'API serveur qui gère le paiement et stocke la contribution
+  alert('Paiement de 1 € réussi ✅');
+
+  // Ajouter contribution localement (demo)
+  const contributions = JSON.parse(localStorage.getItem('contributions') || '[]');
+  contributions.push({
+    id: Date.now(),
+    type: payload.type,
+    content: payload.content,
+    name: payload.name || null
+  });
+  localStorage.setItem('contributions', JSON.stringify(contributions));
+
+  // Mettre à jour compteur global stocké dans appState
+  window.appState.count += 1;
+  window.appState.total += 1;
+  localStorage.setItem('app_state', JSON.stringify(window.appState));
+  localStorage.setItem('hasParticipated', 'true');
+
+  // Redirection vers la galerie
+  window.location.href = 'galerie.html';
+}
+
+</script>
+</body>
+</html>
