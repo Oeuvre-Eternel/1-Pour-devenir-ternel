@@ -44,3 +44,17 @@
     </script>
 </body>
 </html>
+<!-- Ton bouton de paiement -->
+<button id="checkout-button">Payer 1€</button>
+
+<!-- Script Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("pk_test_51RtVb2JEj8phnxw0KarVHzHcdmJDg4gc8N1xQWlBnioSRgNGIgLbNaA0QQNDWQkqJ9vk4R6wY0YxHSCOop6oHjbo00WmXwDa0U");
+  
+  document.getElementById("checkout-button").addEventListener("click", async () => {
+    const res = await fetch("/create-checkout-session", { method: "POST" });
+    const data = await res.json();
+    await stripe.redirectToCheckout({ sessionId: data.id });
+  });
+</script>
