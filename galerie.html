@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galerie - 1 € pour rentrer dans l'histoire</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>🎨 La Grande Fresque</h1>
+  <p class="subtitle">Explorez la création collective — faites glisser la page avec la souris ou scrollez.</p>
+</header>
+
+<main>
+  <div class="galerie-wrap" id="viewport">
+    <div id="galerie"></div>
+  </div>
+
+  <div class="panel small">
+    <div>Participations : <span id="gCount">0</span></div>
+    <a href="index.html" class="link">Accueil</a>
+  </div>
+</main>
+
+<footer>
+  <small>© 2025 [Ton Nom ou Pseudo]</small>
+</footer>
+
+<script src="script.js"></script>
+<script>
+// Build the large white canvas and place items
+window.addEventListener('load', ()=>{
+  buildGallery();
+});
+
+function buildGallery(){
+  const galerie = document.getElementById('galerie');
+  galerie.innerHTML = '';
+
+  const contributions = JSON.parse(localStorage.getItem('contributions') || '[]');
+  document.getElementById('gCount').textContent = contributions.length;
+
+  // Set canvas size (can be larger if many items)
+  const size = Math.max(2000, contributions.length * 200);
+  galerie.style.width = size + 'px';
+  galerie.style.height = size + 'px';
+
+  contributions.forEach((c, idx) => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    // random position inside canvas
+    const margin = 50;
+    const x = Math.floor(Math.random() * (size - 300 - margin*2)) + margin;
+    const y = Math.floor(Math.random() * (size - 200 - margin*2)) + margin;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+
+    if (c.type === 'text'){
+      el.textContent = c.content;
+    } else if (c.type === 'image'){
+      const img = document.createElement('img');
+      img.src = c.content; // base64 from local demo
+      img.style.maxWidth = '220px';
+      el.appendChild(img);
+    }
+
+    // small hover effect
+    el.addEventListener('click', ()=>{
+      // zoom modal simple
+      showModal(c);
+    });
+
+    galerie.appendChild(el);
+  });
+
+  // Enable dragging the viewport
+  enableDragScroll(document.getElementById('viewport'));
+}
+
+function showModal(c){
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const inner = document.createElement('div');
+  inner.className = 'modal-inner';
+  if (c.type === 'text') inner.textContent = c.content;
+  else {
+    const img = document.createElement('img');
+    img.src = c.content;
+    img.style.maxWidth = '80vw';
+    inner.appendChild(img);
+  }
+  const close = document.createElement('button');
+  close.textContent = 'Fermer';
+  close.addEventListener('click', ()=> document.body.removeChild(modal));
+  inner.appendChild(close);
+  modal.appendChild(inner);
+  document.body.appendChild(modal);
+}
+
+function enableDragScroll(container){
+  let isDown = false;
+  let startX, startY, scrollLeft, scrollTop;
+  container.addEventListener('mousedown', (e)=>{
+    isDown = true;
+    container.classList.add('dragging');
+    startX = e.pageX - container.offsetLeft;
+    startY = e.pageY - container.offsetTop;
+    scrollLeft = container.scrollLeft;
+    scrollTop = container.scrollTop;
+  });
+  container.addEventListener('mouseleave', ()=>{ isDown = false; container.classList.remove('dragging');});
+  container.addEventListener('mouseup', ()=>{ isDown = false; container.classList.remove('dragging');});
+  container.addEventListener('mousemove', (e)=>{
+    if(!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - container.offsetLeft;
+    const y = e.pageY - container.offsetTop;
+    const walkX = (x - startX);
+    const walkY = (y - startY);
+    container.scrollLeft = scrollLeft - walkX;
+    container.scrollTop = scrollTop - walkY;
+  });
+}
+
+</script>
+</body>
+</html>
