@@ -1,52 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>1 € pour rentrer dans l'histoire</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Œuvre Éternelle - Accueil</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-  <h1>💶 1 € pour rentrer dans l'histoire</h1>
-  <p class="subtitle">Contribuez une fois, laissez votre trace pour toujours.</p>
-</header>
+    <header>
+        <h1>🌍 L'Œuvre Éternelle</h1>
+        <p>Participez une seule fois, pour toujours.</p>
+    </header>
 
-<main>
-  <div class="panel">
-    <div class="counter">Participations : <span id="count">0</span></div>
-    <div class="counter">Total récolté : <span id="total">0</span> €</div>
-    <div id="lockMessage" class="locked"></div>
+    <main>
+        <div class="stats">
+            <p><strong>Participations :</strong> 0</p>
+            <p><strong>Total récolté :</strong> 0 €</p>
+        </div>
 
-    <div class="actions">
-      <button id="participerBtn" class="primary">Participer</button>
-      <a href="galerie.html" class="link">Explorer la création</a>
-    </div>
+        <div class="actions">
+            <a href="participer.html" class="btn">💶 Participer</a>
+            <a href="explorer.html" class="btn">🔍 Explorer l'œuvre</a>
+        </div>
 
-    <p class="note">Chaque personne peut participer **une seule fois**. Contribution : <strong>1 €</strong> (démo)</p>
-  </div>
-</main>
+        <p class="note">Une contribution coûte 1 € et peut être un <b>texte</b> ou une <b>image</b>. Quand nous atteignons 1,5 million d'€, l'œuvre est scellée pour toujours.</p>
+    </main>
 
-<footer>
- <p>© 2025 Gabin Pardo - Tous droits réservés. Reproduction interdite sans autorisation.</p>
-
-</footer>
-
-<script src="script.js"></script>
-<script>
-// Action du bouton
-document.getElementById('participerBtn').addEventListener('click', function(){
-  if (window.appState.total >= window.appState.maxTotal) {
-    document.getElementById('lockMessage').textContent = '🚫 Le site est verrouillé, objectif atteint !';
-    return;
-  }
-  window.location.href = 'participer.html';
-});
-
-// Initialise l'affichage
-window.addEventListener('load', () => {
-  window.updateUI();
-});
-</script>
+    <footer>
+        <p>© 2025 L'Œuvre Éternelle — Tous droits réservés</p>
+    </footer>
 </body>
 </html>
